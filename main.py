@@ -11,7 +11,7 @@ WIDTH = 800
 HEIGHT = 600
 TITLE = "Joypack Jetride"
 GRAVITY = 0.2
-THRUST = 0.4
+THRUST = 0.7
 
 class Player(pygame.sprite.Sprite):
     """This class is the jetpack man that the player controls"""
@@ -74,16 +74,17 @@ class Obstacle(pygame.sprite.Sprite):
 
         # Create the image
         self.image = pygame.image.load("./assets/knife.png")
-        self.image = pygame.transform.scale(self.image, (45, 150))  # Scale
+        self.image = pygame.transform.scale(self.image, (70, 150))  # Scale
 
         # Create the rect
         self.rect = self.image.get_rect()
 
         # Set the coords off the screen
         self.rect.center = self.random_coords()
+        self.rect.x = random.randrange(WIDTH, WIDTH*2)
 
         # Set the initial xvelocity
-        self.dx = -3
+        self.dx = -5
 
     def update(self, score=0):
         """Change the x coordinate by its dx"""
@@ -97,7 +98,7 @@ class Obstacle(pygame.sprite.Sprite):
     def random_coords(self):
         """Returns a random set of coordinates off the screen to the right"""
         return [
-            random.randrange(WIDTH + 100, WIDTH + 300),
+            random.randrange(WIDTH + 10, WIDTH + 300),
             random.randrange(0, HEIGHT)
         ]
 
@@ -107,7 +108,7 @@ class Obstacle(pygame.sprite.Sprite):
 
 
 
-def main():
+def game_loop():
     pygame.init()
 
     # ----- SCREEN PROPERTIES
@@ -125,11 +126,14 @@ def main():
     player = Player()
     player_group.add(player)
 
-    # Create obstacles with random height and add to group
-    for i in range(3):
+    time_last_obstacle_created = pygame.time.get_ticks()
+    # Create obstacles and add to group
+    # Create obstacles and add to group
+    for i in range(4):
         obstacle = Obstacle()
         obstacle_group.add(obstacle)
-        time.sleep(1)
+
+
 
     # ----- LOCAL VARIABLES
     done = False
@@ -160,6 +164,11 @@ def main():
         player_group.update()
         obstacle_group.update()
 
+        # If a player group collides with an obstacle group end the game
+        collided_player = pygame.sprite.spritecollide(player, obstacle_group, dokill=True)
+        if len(collided_player) > 0:
+            done = True
+
         # ----- RENDER
         screen.fill(BLACK)
         player_group.draw(screen)
@@ -170,6 +179,15 @@ def main():
         clock.tick(60)
 
     pygame.quit()
+
+def end_game_loop() -> bool:
+    """Returns True if user wants to play again"""
+
+
+def main():
+    game_loop()
+    while end_game_loop():
+        game_loop
 
 
 if __name__ == "__main__":
