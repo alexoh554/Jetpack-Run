@@ -13,6 +13,7 @@ TITLE = "Joypack Jetride"
 GRAVITY = 0.2
 THRUST = 0.7
 
+
 class Player(pygame.sprite.Sprite):
     """This class is the jetpack man that the player controls"""
 
@@ -103,7 +104,7 @@ class Obstacle(pygame.sprite.Sprite):
         ]
 
     def speed_up(self):
-        """Speed up the movement of the obstacles after a certain score is reached"""
+        """Speed up the obstacles when the function is called"""
         self.dx -= 0.5
 
 
@@ -126,8 +127,6 @@ def game_loop():
     player = Player()
     player_group.add(player)
 
-    time_last_obstacle_created = pygame.time.get_ticks()
-    # Create obstacles and add to group
     # Create obstacles and add to group
     for i in range(4):
         obstacle = Obstacle()
@@ -140,6 +139,8 @@ def game_loop():
     clock = pygame.time.Clock()
     space_bar_pressed = False
     score = 0
+    time_until_score = 0
+    GAME_FONT = pygame.font.Font("./assets/ARCADE_N.TTF", 20)
 
     # ----- MAIN LOOP
     while not done:
@@ -169,14 +170,29 @@ def game_loop():
         if len(collided_player) > 0:
             done = True
 
+        # Update the score every time_until_score iterations of the while loop
+        if time_until_score == 6:
+            score += 1
+            time_until_score = 0
+
+            # Every time the score reaches a certain amount, speed up the obstacles
+            if score % 200 == 0:
+                obstacle.speed_up()
+        time_until_score += 1
+
         # ----- RENDER
         screen.fill(BLACK)
         player_group.draw(screen)
         obstacle_group.draw(screen)
 
+        # Display the score on the top left of the screen
+        score_surf = GAME_FONT.render(f"SCORE:{score}", True, WHITE)
+        screen.blit(score_surf, (0, 0))
+
         # ----- UPDATE DISPLAY
         pygame.display.flip()
         clock.tick(60)
+
 
     pygame.quit()
 
