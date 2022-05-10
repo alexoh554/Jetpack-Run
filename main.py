@@ -109,15 +109,13 @@ class Obstacle(pygame.sprite.Sprite):
 
 
 
-def game_loop():
+def game_loop()-> int:
     pygame.init()
 
     # ----- SCREEN PROPERTIES
     size = (WIDTH, HEIGHT)
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption(TITLE)
-
-
 
     # Create sprite groups
     player_group = pygame.sprite.Group()
@@ -169,6 +167,7 @@ def game_loop():
         collided_player = pygame.sprite.spritecollide(player, obstacle_group, dokill=True)
         if len(collided_player) > 0:
             done = True
+            return score
 
         # Update the score every time_until_score iterations of the while loop
         if time_until_score == 6:
@@ -196,13 +195,55 @@ def game_loop():
 
     pygame.quit()
 
-def end_game_loop() -> bool:
+def end_game_loop(score) -> bool:
     """Returns True if user wants to play again"""
+    # ----- SCREEN PROPERTIES
+    size = (WIDTH, HEIGHT)
+    screen = pygame.display.set_mode(size)
+    pygame.display.set_caption(TITLE)
+
+    # ----- LOCAL VARIABLES
+    done = False
+    GAME_OVER_FONT = pygame.font.Font("./assets/ARCADE_N.TTF", 50)
+    SCORE_FONT = pygame.font.Font("./assets/ARCADE_N.TTF", 30)
+    clock = pygame.time.Clock()
+
+    # ----- MAIN LOOP
+    while not done:
+        # ----- EVENT HANDLER
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
+                # Check for user input
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    return True
+
+        # ----- LOGIC
+
+
+
+        # ------ RENDER
+        # Display game over text
+        game_over_surf = GAME_OVER_FONT.render("GAME OVER", True, WHITE)
+        screen.blit(game_over_surf, (WIDTH / 2 - 200, HEIGHT / 2))
+
+        # Display the user's score
+        score_surf = SCORE_FONT.render(f"YOUR SCORE:{score}", True, WHITE)
+        screen.blit(score_surf, (WIDTH/2 - 200, HEIGHT / 2 - 100))
+
+        # Display user instructions
+        instructions_surf = SCORE_FONT.render("Press SPACE to play again", True, WHITE)
+        screen.blit(instructions_surf, (50, HEIGHT / 2 + 100))
+
+        # ----- UPDATE DISPLAY
+        pygame.display.flip()
+        clock.tick(60)
 
 
 def main():
-    game_loop()
-    while end_game_loop():
+    score = game_loop()
+    while end_game_loop(score):
         game_loop
 
 
