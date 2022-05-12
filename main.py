@@ -13,6 +13,7 @@ TITLE = "Joypack Jetride"
 GRAVITY = 0.2
 THRUST = 0.7
 
+score = 0
 
 class Player(pygame.sprite.Sprite):
     """This class is the jetpack man that the player controls"""
@@ -87,14 +88,16 @@ class Obstacle(pygame.sprite.Sprite):
         # Set the initial xvelocity
         self.dx = -5
 
-    def update(self, score=0):
+    def update(self):
         """Change the x coordinate by its dx"""
         self.rect.x += self.dx
 
         # Recycle the obstacle by setting its position back off the screen
         if self.rect.x <= 0:
             self.rect.center = self.random_coords()
-            score += 1
+
+        if score % 200 == 0 and score != 0:
+            self.speed_up()
 
     def random_coords(self):
         """Returns a random set of coordinates off the screen to the right"""
@@ -109,7 +112,7 @@ class Obstacle(pygame.sprite.Sprite):
 
 
 
-def game_loop()-> int:
+def game_loop():
     pygame.init()
 
     # ----- SCREEN PROPERTIES
@@ -176,7 +179,7 @@ def game_loop()-> int:
 
             # Every time the score reaches a certain amount, speed up the obstacles
             if score % 200 == 0:
-                obstacle.speed_up()
+                obstacle_group.update()
         time_until_score += 1
 
         # ----- RENDER
@@ -195,7 +198,7 @@ def game_loop()-> int:
 
     pygame.quit()
 
-def end_game_loop(score) -> bool:
+def end_game_loop() -> bool:
     """Returns True if user wants to play again"""
     # ----- SCREEN PROPERTIES
     size = (WIDTH, HEIGHT)
@@ -242,10 +245,11 @@ def end_game_loop(score) -> bool:
 
 
 def main():
-    score = game_loop()
-    while end_game_loop(score):
-        game_loop
-
+    game_loop()
+    time.sleep(0.5)
+    while end_game_loop():
+        game_loop()
+        time.sleep(0.5)
 
 if __name__ == "__main__":
     main()
