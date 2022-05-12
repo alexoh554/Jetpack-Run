@@ -10,7 +10,7 @@ SKY_BLUE = (95, 165, 228)
 WIDTH = 800
 HEIGHT = 600
 TITLE = "Joypack Jetride"
-GRAVITY = 0.3
+GRAVITY = 0.4
 THRUST = 0.7
 
 score = 0
@@ -92,7 +92,7 @@ class Obstacle(pygame.sprite.Sprite):
 
         # Create the image
         self.image = pygame.image.load("./assets/knife.png")
-        self.image = pygame.transform.scale(self.image, (70, 150))  # Scale
+        self.image = pygame.transform.scale(self.image, (10, 120))  # Scale
 
         # Create the rect
         self.rect = self.image.get_rect()
@@ -119,7 +119,7 @@ class Obstacle(pygame.sprite.Sprite):
         """Returns a random set of coordinates off the screen to the right"""
         return [
             random.randrange(WIDTH + 10, WIDTH + 300),
-            random.randrange(0, HEIGHT)
+            random.randrange(0 + self.rect.height / 2, HEIGHT - self.rect.height / 2)
         ]
 
     def speed_up(self):
@@ -185,8 +185,10 @@ def game_loop():
         # If a player group collides with an obstacle group end the game
         collided_player = pygame.sprite.spritecollide(player, obstacle_group, dokill=True)
         if len(collided_player) > 0:
+            player.image = pygame.image.load("./assets/dying_man.png")
+            player.image = pygame.transform.scale(player.image, (60, 110))  # Scale
+
             done = True
-            return score
 
         # Update the score every time_until_score iterations of the while loop
         if time_until_score == 6:
