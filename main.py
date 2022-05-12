@@ -10,7 +10,7 @@ SKY_BLUE = (95, 165, 228)
 WIDTH = 800
 HEIGHT = 600
 TITLE = "Joypack Jetride"
-GRAVITY = 0.2
+GRAVITY = 0.3
 THRUST = 0.7
 
 score = 0
@@ -34,23 +34,34 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = 50
         self.rect.y = HEIGHT - self.rect.height
         self.dy = 0
+        self.acceleration = 0     # 2 possible values: Thrust on and thrust off
 
     def update(self):
         """Move the player"""
-        # Gravity
-        self.calc_grav()
-
         # Move up/down
         self.rect.y += self.dy
 
-        # Check for contact
-
         # Update sprite based on player's vertical movement/status
+        if self.rect.bottom == HEIGHT:                                     # Player is on ground
+            if score % 2 == 0:
+                self.image = pygame.image.load("./assets/running_man.png")
+            else:
+                self.image = pygame.image.load("./assets/running_man2.png")
+            self.image = pygame.transform.scale(self.image, (60, 110))     # Scale
+
+        elif self.rect.bottom < HEIGHT and self.acceleration != THRUST:
+            self.image = pygame.image.load("./assets/falling_man.png")     # Player is falling down
+            self.image = pygame.transform.scale(self.image, (60, 110))     # Scale
+
+        # Gravity
+        self.calc_grav()
+
 
     def calc_grav(self):
         """Calculate gravity and update the speed vector"""
         # Add the gravity unit to the dy
-        self.dy += GRAVITY
+        self.acceleration = GRAVITY
+        self.dy += self.acceleration
 
         # Check if player on ground
         if self.rect.y >= HEIGHT - self.rect.height and self.dy >= 0:
@@ -64,7 +75,12 @@ class Player(pygame.sprite.Sprite):
 
     def fly(self):
         """Called when the user hits the space bar. The player moves up at constant acceleration"""
-        self.dy -= THRUST
+        self.acceleration = THRUST
+        self.dy -= self.acceleration
+
+        # Change the sprite to a jetpack flying man
+        self.image = pygame.image.load("./assets/flying_man.png")
+        self.image = pygame.transform.scale(self.image, (60, 110))  # Scale
 
 class Obstacle(pygame.sprite.Sprite):
     """Class is obstacles that a player faces on the screen"""
@@ -139,8 +155,8 @@ def game_loop():
     done = False
     clock = pygame.time.Clock()
     space_bar_pressed = False
-    score = 0
     time_until_score = 0
+    global score
     GAME_FONT = pygame.font.Font("./assets/ARCADE_N.TTF", 20)
 
     # ----- MAIN LOOP
@@ -178,7 +194,7 @@ def game_loop():
             time_until_score = 0
 
             # Every time the score reaches a certain amount, speed up the obstacles
-            if score % 200 == 0:
+            if score % 100 == 0:
                 obstacle_group.update()
         time_until_score += 1
 
@@ -210,6 +226,7 @@ def end_game_loop() -> bool:
     GAME_OVER_FONT = pygame.font.Font("./assets/ARCADE_N.TTF", 50)
     SCORE_FONT = pygame.font.Font("./assets/ARCADE_N.TTF", 30)
     clock = pygame.time.Clock()
+    global score
 
     # ----- MAIN LOOP
     while not done:
@@ -247,7 +264,11 @@ def end_game_loop() -> bool:
 def main():
     game_loop()
     time.sleep(0.5)
-    while end_game_loop():
+    while end_game_loop():     # While end_game_loop returns True run game_loop
+        # Reset the score
+        global score
+        score = 0
+
         game_loop()
         time.sleep(0.5)
 
