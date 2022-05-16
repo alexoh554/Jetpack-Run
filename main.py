@@ -11,7 +11,7 @@ WIDTH = 800
 HEIGHT = 600
 TITLE = "Joypack Jetride"
 GRAVITY = 0.4
-THRUST = 0.7
+THRUST = 0.9
 
 score = 0
 
@@ -82,6 +82,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load("./assets/flying_man.png")
         self.image = pygame.transform.scale(self.image, (60, 110))  # Scale
 
+
 class Obstacle(pygame.sprite.Sprite):
     """Class is obstacles that a player faces on the screen"""
     def __init__(self):
@@ -112,7 +113,7 @@ class Obstacle(pygame.sprite.Sprite):
         if self.rect.x <= 0:
             self.rect.center = self.random_coords()
 
-        if score % 200 == 0 and score != 0:
+        if score % 100 == 0 and score != 0:
             self.speed_up()
 
     def random_coords(self):
@@ -124,13 +125,11 @@ class Obstacle(pygame.sprite.Sprite):
 
     def speed_up(self):
         """Speed up the obstacles when the function is called"""
-        self.dx -= 0.5
+        self.dx -= 0.2
 
 
 
 def game_loop():
-    pygame.init()
-
     # ----- SCREEN PROPERTIES
     size = (WIDTH, HEIGHT)
     screen = pygame.display.set_mode(size)
@@ -158,6 +157,7 @@ def game_loop():
     time_until_score = 0
     global score
     GAME_FONT = pygame.font.Font("./assets/ARCADE_N.TTF", 20)
+    game_music = pygame.mixer.Sound("./assets/game_music.wav")
 
     # ----- MAIN LOOP
     while not done:
@@ -181,6 +181,9 @@ def game_loop():
         # ----- LOGIC
         player_group.update()
         obstacle_group.update()
+
+        # Play the game music
+        pygame.mixer.Sound.play(game_music)
 
         # If a player group collides with an obstacle group end the game
         collided_player = pygame.sprite.spritecollide(player, obstacle_group, dokill=True)
@@ -214,8 +217,6 @@ def game_loop():
         clock.tick(60)
 
 
-    pygame.quit()
-
 def end_game_loop() -> bool:
     """Returns True if user wants to play again"""
     # ----- SCREEN PROPERTIES
@@ -229,6 +230,7 @@ def end_game_loop() -> bool:
     SCORE_FONT = pygame.font.Font("./assets/ARCADE_N.TTF", 30)
     clock = pygame.time.Clock()
     global score
+    game_end_music = pygame.mixer.Sound("./assets/game_end_music.wav")
 
     # ----- MAIN LOOP
     while not done:
@@ -242,7 +244,7 @@ def end_game_loop() -> bool:
                     return True
 
         # ----- LOGIC
-
+        pygame.mixer.Sound.play(game_end_music)
 
 
         # ------ RENDER
@@ -263,16 +265,26 @@ def end_game_loop() -> bool:
         clock.tick(60)
 
 
+
 def main():
+    pygame.init()
     game_loop()
+    pygame.mixer.stop()
     time.sleep(0.5)
+
     while end_game_loop():     # While end_game_loop returns True run game_loop
         # Reset the score
         global score
         score = 0
 
+        pygame.mixer.stop()
+
         game_loop()
+
+        pygame.mixer.stop()
         time.sleep(0.5)
+
+    pygame.quit()
 
 if __name__ == "__main__":
     main()
