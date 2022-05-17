@@ -127,7 +127,28 @@ class Obstacle(pygame.sprite.Sprite):
         """Speed up the obstacles when the function is called"""
         self.dx -= 0.2
 
+class Background(pygame.sprite.Sprite):
+    """The scrolling background"""
 
+    # Methods
+    def __init__(self, x):
+        """Constructor"""
+        super().__init__()
+
+        # Create the image
+        self.image = pygame.image.load("./assets/backdrop.jpg")
+
+        # Create the rect
+        self.rect = self.image.get_rect()
+
+        self.rect.x = x
+        self.dx = -3
+
+
+    def update(self):
+        self.rect.x += self.dx
+        if self.rect.x <= self.image.get_width() * -1:
+            self.rect.x = self.image.get_width()
 
 def game_loop():
     # ----- SCREEN PROPERTIES
@@ -138,6 +159,12 @@ def game_loop():
     # Create sprite groups
     player_group = pygame.sprite.Group()
     obstacle_group = pygame.sprite.Group()
+
+    background1 = Background(0)
+    background2 = Background(1920)
+    background_group = pygame.sprite.Group()
+    background_group.add(background1)
+    background_group.add(background2)
 
     # Create player and add to group
     player = Player()
@@ -181,6 +208,7 @@ def game_loop():
         # ----- LOGIC
         player_group.update()
         obstacle_group.update()
+        background_group.update()
 
         # Play the game music
         pygame.mixer.Sound.play(game_music)
@@ -205,8 +233,11 @@ def game_loop():
 
         # ----- RENDER
         screen.fill(BLACK)
+        background_group.draw(screen)
         player_group.draw(screen)
         obstacle_group.draw(screen)
+
+
 
         # Display the score on the top left of the screen
         score_surf = GAME_FONT.render(f"SCORE:{score}", True, WHITE)
