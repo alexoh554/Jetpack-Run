@@ -93,7 +93,7 @@ class Obstacle(pygame.sprite.Sprite):
 
         # Create the image
         self.image = pygame.image.load("./assets/knife.png")
-        self.image = pygame.transform.scale(self.image, (10, 120))  # Scale
+        self.image = pygame.transform.scale(self.image, (12, 100))  # Scale
 
         # Create the rect
         self.rect = self.image.get_rect()
@@ -136,13 +136,14 @@ class Background(pygame.sprite.Sprite):
         super().__init__()
 
         # Create the image
-        self.image = pygame.image.load("./assets/backdrop.jpg")
+        self.image = pygame.image.load("./assets/backdrop.png")
+        self.image = pygame.transform.scale(self.image, (WIDTH, HEIGHT)) # Scale
 
         # Create the rect
         self.rect = self.image.get_rect()
 
         self.rect.x = x
-        self.dx = -3
+        self.dx = -4
 
 
     def update(self):
@@ -161,7 +162,7 @@ def game_loop():
     obstacle_group = pygame.sprite.Group()
 
     background1 = Background(0)
-    background2 = Background(1920)
+    background2 = Background(WIDTH)
     background_group = pygame.sprite.Group()
     background_group.add(background1)
     background_group.add(background2)
