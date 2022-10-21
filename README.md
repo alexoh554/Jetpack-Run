@@ -7,7 +7,7 @@ Jetpack Run is a scrolling runner game inspired by the game "Jetpack Joyride". U
 ![Screenshot](/assets/running.png?raw=true)
 ![Screenshot](/assets/thrust.png?raw=true)
 ![Screenshot](/assets/falling.png?raw=true)
-![Screenshot](/assets/endgame.png?raw=true)
+![Screenshot](/assets/endscreen.png?raw=true)
 
 ## Getting started
 ### Requirements
