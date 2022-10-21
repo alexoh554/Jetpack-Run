@@ -9,7 +9,7 @@ YELLOW = (255, 255, 0)
 SKY_BLUE = (95, 165, 228)
 WIDTH = 800
 HEIGHT = 600
-TITLE = "Joypack Jetride"
+TITLE = "Jetpack Run"
 GRAVITY = 0.4
 THRUST = 0.9
 
@@ -172,7 +172,7 @@ def game_loop():
     player_group.add(player)
 
     # Create obstacles and add to group
-    for i in range(4):
+    for i in range(3):
         obstacle = Obstacle()
         obstacle_group.add(obstacle)
 
